@@ -45,6 +45,7 @@ app.post('/interactions', verifyKeyMiddleware(PUBLIC_KEY), async (req, res) => {
     }
 
     if(interaction.data.name === 'crujir'){
+      console.log(WEBURL + 'assets/crujir.png')
       return res.send({
         type: InteractionResponseType.CHANNEL_MESSAGE_WITH_SOURCE,
         data: {
@@ -52,7 +53,7 @@ app.post('/interactions', verifyKeyMiddleware(PUBLIC_KEY), async (req, res) => {
           embeds: [
             {
               image: {
-                url: WEBURL + 'assets/crujir.png',
+                url: 'https://i.ibb.co/yhpvkYr/crujir.png',
               },
             },
           ],
