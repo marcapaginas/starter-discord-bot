@@ -4,7 +4,9 @@ require('dotenv').config()
 const APPLICATION_ID = process.env.APPLICATION_ID 
 const TOKEN = process.env.TOKEN 
 const PUBLIC_KEY = process.env.PUBLIC_KEY || 'not set'
-const GUILD_ID = process.env.GUILD_ID 
+const GUILD_ID = process.env.GUILD_ID
+const GOOGLE_API_KEY = process.env.GOOGLE_API_KEY
+const CALENDAR_ID = process.env.CALENDAR_ID
 
 const WEBURL = 'https://a-bot-ilio.cyclic.cloud'
 
@@ -12,6 +14,11 @@ const axios = require('axios')
 const express = require('express');
 const { InteractionType, InteractionResponseType, verifyKeyMiddleware } = require('discord-interactions');
 
+const GoogleCalendar = require('google-calendar');
+// Create a Google Calendar client
+const googleCalendarClient = new GoogleCalendar({
+  apiKey: GOOGLE_API_KEY,
+});
 
 const app = express();
 // app.use(bodyParser.json());
@@ -42,6 +49,29 @@ app.post('/interactions', verifyKeyMiddleware(PUBLIC_KEY), async (req, res) => {
           content: `Hola ${interaction.member.user.username}!`,
         },
       });
+    }
+
+    if (interaction.data.name === 'calendar') {
+        let events = await googleCalendarClient.getEvents({
+            calendarId: CALENDAR_ID,
+            timeMin: new Date().toISOString(),
+            maxResults: 10,
+            singleEvents: true,
+            orderBy: 'startTime',
+        });
+        console.log(events)
+        return res.send({
+            type: InteractionResponseType.CHANNEL_MESSAGE_WITH_SOURCE,
+            data: {
+                content: `Hola ${interaction.member.user.username}!`,
+                embeds: [
+                    {
+                        title: 'Upcoming Events',
+                        description: events.map(event => `**${event.summary}** (${event.start.dateTime})`).join('\n'),
+                    },
+                ],
+            },
+        });
     }
 
     if(interaction.data.name === 'crujir'){
@@ -100,6 +130,11 @@ app.get('/register_commands', async (req,res) =>{
     {
       "name": "crujir",
       "description": "jeje",
+      "options": []
+    },
+    {
+      "name": "calendar",
+      "description": "eventos",
       "options": []
     },
     {
