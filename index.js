@@ -6,6 +6,7 @@ const TOKEN = process.env.TOKEN
 const PUBLIC_KEY = process.env.PUBLIC_KEY || 'not set'
 const GUILD_ID = process.env.GUILD_ID 
 
+const WEBURL = 'https://a-bot-ilio.cyclic.cloud'
 
 const axios = require('axios')
 const express = require('express');
@@ -39,6 +40,22 @@ app.post('/interactions', verifyKeyMiddleware(PUBLIC_KEY), async (req, res) => {
         type: InteractionResponseType.CHANNEL_MESSAGE_WITH_SOURCE,
         data: {
           content: `Hola ${interaction.member.user.username}!`,
+        },
+      });
+    }
+
+    if(interaction.data.name === 'crujir'){
+      return res.send({
+        type: InteractionResponseType.CHANNEL_MESSAGE_WITH_SOURCE,
+        data: {
+          content: `Ya sabes que te voy a crujir ${interaction.member.user.username}!`,
+          embeds: [
+            {
+              image: {
+                url: WEBURL + 'assets/crujir.png',
+              },
+            },
+          ],
         },
       });
     }
@@ -77,6 +94,11 @@ app.get('/register_commands', async (req,res) =>{
     {
       "name": "hola",
       "description": "replies with Hola!",
+      "options": []
+    },
+    {
+      "name": "crujir",
+      "description": "jeje",
       "options": []
     },
     {
